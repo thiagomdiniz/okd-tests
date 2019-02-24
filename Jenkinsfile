@@ -1,9 +1,10 @@
 pipeline {
     agent { dockerfile true }
     stages {
-        stage('Test') {
+        stage('Docker Build') {
             steps {
-                sh 'php --version'
+                def customImage = docker.build("diniz-image:${env.BUILD_ID}")
+                customImage.push()
             }
         }
     }
