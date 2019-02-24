@@ -3,10 +3,8 @@ pipeline {
     stages {
         stage('Docker Build') {
             steps {
-                node {
-                  checkout scm
-                  def customImage = docker.build("diniz-image:${env.BUILD_ID}")
-                  customImage.push()
+                script {
+                  docker.build "diniz-image:$BUILD_NUMBER"
                 }
             }
         }
