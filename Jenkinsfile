@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        docker { image 'php:7.2-apache' }
-    }
+    agent { dockerfile true }
     stages {
         stage('Test') {
             steps {
