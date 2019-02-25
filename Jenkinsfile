@@ -1,10 +1,16 @@
 pipeline {
     agent { dockerfile true }
     stages {
-        stage('Docker Build') {
+        stage('Build Docker Image') {
             steps {
                 script {
                   docker.build "diniz-image:$BUILD_NUMBER"
+                }
+            }
+        }
+        stage('Push Docker Image') {
+            steps {
+                script {
                   dockerImage.push()
                 }
             }
