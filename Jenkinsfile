@@ -1,13 +1,11 @@
 pipeline {
-    agent { dockerfile true }
-    environment {
-        PATH = "/usr/bin:/usr/local/bin:$PATH"
-    }
+    agent any
     stages {
-        stage('Build Docker Image') {
+        stage('Build Image') {
             steps {
-                sh "echo $PATH"
-                sh "docker build -t diniz-image:$BUILD_NUMBER ."
+                script {
+                    def dockerImage = docker.build("diniz-image:$BUILD_NUMBER")
+                }
             }
         }
         stage('Push Docker Image') {
