@@ -11,7 +11,9 @@ pipeline {
         stage('Push Docker Image') {
             steps {
                 script {
-                  dockerImage.push()
+                    docker.withRegistry('https://registry.fiesc.com.br/thiago/diniz-image:latest', 'oc-registry') {
+                        dockerImage.push()
+                    }
                 }
             }
         }
