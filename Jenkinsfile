@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        registry = "https://registry.fiesc.com.br/di-ci"
+        registry = "registry.fiesc.com.br/di-ci"
         registryCredential = 'oc-registry'
         dockerImage = ''
     }
