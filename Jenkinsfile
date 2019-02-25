@@ -8,7 +8,7 @@ pipeline {
             steps {
                 sh "echo $PATH"
                 script {
-                  docker.build "diniz-image:$BUILD_NUMBER"
+                  dockerImage = docker.build "diniz-image:$BUILD_NUMBER"
                 }
             }
         }
