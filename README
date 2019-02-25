@@ -1,0 +1,52 @@
+# okd-tests
+
+oc login -u system:admin
+
+jenkinsPipelineConfig:
+  autoProvisionEnabled: true
+./minishift openshift config set --patch '{"kubernetesMasterConfig": {"jenkinsPipelineConfig": {"autoProvisionEnabled":"false"}}}' --target master
+
+oc new-project ci #recomended
+oc create serviceaccount jenkins
+#oc policy add-role-to-user edit system:serviceaccount:ci:jenkins -n <project>
+oc adm policy add-cluster-role-to-user edit system:serviceaccount:ci:jenkins
+oc serviceaccounts get-token jenkins -n ci
+
+# Cria contas sync e client no Jenkins com o token gerado
+
+# Import certificate
+openssl s_client -showcerts -connect your-target-server < /dev/null 2> /dev/null | openssl x509 -outform PEM > ~/root_ca.pem
+# Duplicate Java Keystore file and move into Jenkins...
+mkdir $JENKINS_HOME/keystore/
+cp $JAVA_HOME/jre/lib/security/cacerts $JENKINS_HOME/keystore/
+# Add Certificate to Keystore
+keytool -import -alias OPENSHIFT -keystore $JENKINS_HOME/keystore/cacerts -file ~/root_ca.pem
+# Add -Djavax.net.ssl.trustStore=$JENKINS_HOME/keystore/cacerts to the
+# Jenkins startup parameters. For Debian/Ubuntu, this is /etc/default/jenkins
+echo 'JAVA_ARGS="$JAVA_ARGS -Djavax.net.ssl.trustStore=$JENKINS_HOME/keystore/cacerts"' >> /etc/default/jenkins
+
+cat diniz-pipeline.yml 
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  name: diniz-pipeline
+  labels:
+    name: diniz-pipeline
+spec:
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfile:
+  source:
+    git:
+      uri: "https://github.com/thiagomdiniz/okd-tests"
+
+
+./minishift openshift registry
+
+# Instalar docker (client) no Jenkins (montei o docker.sock no container do Jenkins)
+docker run --privileged --name my-jenkins -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home -v /var/run/docker.sock:/var/run/docker.sock my_jenkins
+#gpasswd -a jenkins root - pro jenkins conseguir usar o docker
+
+#caso precise expor registry do minishift
+oc expose service docker-registry --hostname=registrydi.192.168.42.29.nip.io -n default
