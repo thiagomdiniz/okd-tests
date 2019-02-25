@@ -4,7 +4,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    def dockerImage = docker.build("diniz-image:$BUILD_NUMBER")
+                    dockerImage = docker.build("diniz-image:$BUILD_NUMBER")
                 }
             }
         }
