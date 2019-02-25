@@ -24,7 +24,7 @@ pipeline {
         }
         stage('Remove Unused docker image') {
           steps {
-            sh "docker rmi diniz-image:$BUILD_NUMBER"
+            sh "docker rmi " + registry + ":$BUILD_NUMBER"
           }
        }
     }
