@@ -1,17 +1,22 @@
 pipeline {
+    environment {
+        registry = "https://registry.fiesc.com.br/di-ci"
+        registryCredential = 'oc-registry'
+        dockerImage = ''
+    }
     agent any
     stages {
         stage('Build Image') {
             steps {
                 script {
-                    dockerImage = docker.build("diniz-image:$BUILD_NUMBER")
+                    dockerImage = docker.build registry + ":$BUILD_NUMBER"
                 }
             }
         }
         stage('Push Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://registry.fiesc.com.br/di-ci/diniz-image', 'oc-registry') {
+                    docker.withRegistry('', registryCredential) {
                         dockerImage.push()
                     }
                 }
