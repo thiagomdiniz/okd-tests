@@ -2,8 +2,10 @@ pipeline {
     agent { dockerfile true }
     stages {
         stage('Initialize') {
-            sh "echo PATH = ${PATH}"
-            sh "docker version"
+            steps {
+                sh "echo PATH = ${PATH}"
+                sh "docker version"
+            }
         }
         stage('Build Docker Image') {
             steps {
@@ -20,7 +22,7 @@ pipeline {
             }
         }
         stage('Remove Unused docker image') {
-          steps{
+          steps {
             sh "docker rmi diniz-image:$BUILD_NUMBER"
           }
        }
