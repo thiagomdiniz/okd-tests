@@ -1,12 +1,6 @@
 pipeline {
     agent { dockerfile true }
     stages {
-        stage('Initialize') {
-            steps {
-                sh "echo PATH = ${PATH}"
-                sh "/usr/bin/docker version"
-            }
-        }
         stage('Build Docker Image') {
             steps {
                 script {
