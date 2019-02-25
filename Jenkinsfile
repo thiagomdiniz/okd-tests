@@ -6,6 +6,7 @@ pipeline {
     stages {
         stage('Build Docker Image') {
             steps {
+                sh "echo $PATH"
                 script {
                   docker.build "diniz-image:$BUILD_NUMBER"
                 }
