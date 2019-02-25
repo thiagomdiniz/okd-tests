@@ -4,7 +4,7 @@ pipeline {
         stage('Initialize') {
             steps {
                 sh "echo PATH = ${PATH}"
-                sh "docker version"
+                sh "/usr/bin/docker version"
             }
         }
         stage('Build Docker Image') {
