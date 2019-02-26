@@ -13,9 +13,10 @@ RUN a2enmod rewrite
 RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php/7.2/apache2/php.ini && \
  sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php/7.2/apache2/php.ini && \
  sed -i 's/80/8080/g' /etc/apache2/ports.conf && \
- chown -R www-data. /var/log/apache2 && \
- chmod -R 777 /var/log/apache2 && \
- chown -R www-data. /var/run/apache2 && chmod -R 777 /var/run/apache2
+ chgrp -R 0 /var/log/apache2 && \
+ chmod -R g=u /var/log/apache2 && \
+ chgrp -R 0 /var/run/apache2 && \
+ chmod -R g=u /var/run/apache2
 
 # Manually set up the apache environment variables
 ENV APACHE_RUN_USER www-data
@@ -25,8 +26,8 @@ ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2/apache2.pid
 
 # forward request and error logs to docker log collector
-RUN ln -sf /dev/stdout /var/log/apache2/access.log \
-	&& ln -sf /dev/stderr /var/log/apache2/error.log
+RUN ln -sf /dev/stdout /var/log/apache2/access.log && \
+ ln -sf /dev/stderr /var/log/apache2/error.log
 
 # Expose apache.
 EXPOSE 8080
@@ -38,5 +39,4 @@ ADD app /var/www/site
 ADD apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 
 # By default start up apache in the foreground, override with /bin/bash for interative.
-USER www-data
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
