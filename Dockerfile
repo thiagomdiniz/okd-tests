@@ -4,7 +4,8 @@ MAINTAINER Selau Eleven <selau@eleven.io>
 RUN apt-get update && apt-get -y upgrade
 
 # Install apache, PHP, and supplimentary programs. curl and lynx-cur are for debugging the container.
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install apache2 libapache2-mod-php5 php5-mysql php5-gd php-pear php-apc php5-curl php5-ldap curl lynx-cur
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -y install apache2 libapache2-mod-php5 php5-mysql php5-gd php-pear php-apc php5-curl php5-ldap curl lynx-cur
 
 # Enable apache mods.
 RUN php5enmod openssl && a2enmod php5 && a2enmod rewrite
