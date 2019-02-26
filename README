@@ -50,3 +50,6 @@ docker run --privileged --name my-jenkins -d -p 8080:8080 -p 50000:50000 -v jenk
 
 #caso precise expor registry do minishift
 oc expose service docker-registry --hostname=registrydi.192.168.42.29.nip.io -n default
+
+# Acessar o registry do OKD
+https://docs.openshift.com/container-platform/3.11/install_config/registry/accessing_registry.html
