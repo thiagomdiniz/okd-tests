@@ -5,7 +5,7 @@ metadata:
   annotations:
     openshift.io/display-name: "Pipeline as Code (Jenkinsfile + Dockerfile)"
     description: "Com este template você deverá possuir um Jenkinsfile e um Dockerfile na raiz do sei projeto Git."
-    iconClass: "icon-php"
+    iconClass: "icon-openshift"
     tags: "apache,php,jenkinsfile,dockerfile"
 objects:
 - apiVersion: v1
@@ -60,9 +60,9 @@ objects:
     triggers:
     - type: ImageChange
     - type: ConfigChange
-    - github:
-        secret: ${GITHUB_WEBHOOK_SECRET}
-      type: GitHub
+    - gitlab:
+        secret: ${GITLAB_WEBHOOK_SECRET}
+      type: GitLab
 - apiVersion: v1
   kind: DeploymentConfig
   metadata:
@@ -76,7 +76,7 @@ objects:
       name: ${NAME}
       deploymentconfig: ${NAME}
     strategy:
-      type: Recreate
+      type: Rolling
     template:
       metadata:
         labels:
@@ -115,7 +115,7 @@ parameters:
   displayName: Git Repository URL
   name: SOURCE_REPOSITORY_URL
   required: true
-  value: https://github.com/thiagomdiniz/okd-tests
+  value: http://git.fiesc.com.br/thiago/test-pipeline-as-code
 - description: Set this to a branch name, tag or other ref of your repository if you
     are not using the default branch.
   displayName: Git Reference
@@ -124,9 +124,9 @@ parameters:
     blank a value will be defaulted.
   displayName: Application Hostname
   name: APPLICATION_DOMAIN
-- description: Github trigger secret.  A difficult to guess string encoded as part
+- description: Gitlab trigger secret.  A difficult to guess string encoded as part
     of the webhook URL.  Not encrypted.
-  displayName: GitHub Webhook Secret
+  displayName: GitLab Webhook Secret
   from: '[a-zA-Z0-9]{40}'
   generate: expression
-  name: GITHUB_WEBHOOK_SECRET
+  name: GITLAB_WEBHOOK_SECRET
