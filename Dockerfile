@@ -38,4 +38,5 @@ ADD app /var/www/site
 ADD apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 
 # By default start up apache in the foreground, override with /bin/bash for interative.
+USER www-data
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
