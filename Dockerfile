@@ -22,6 +22,10 @@ ENV APACHE_LOG_DIR /var/log/apache2
 ENV APACHE_LOCK_DIR /var/lock/apache2
 ENV APACHE_PID_FILE /var/run/apache2.pid
 
+# forward request and error logs to docker log collector
+RUN ln -sf /dev/stdout /var/log/apache2/access.log \
+	&& ln -sf /dev/stderr /var/log/apache2/error.log
+
 # Expose apache.
 EXPOSE 8080
 
@@ -32,4 +36,4 @@ ADD app /var/www/site
 ADD apache-config.conf /etc/apache2/sites-enabled/000-default.conf
 
 # By default start up apache in the foreground, override with /bin/bash for interative.
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
