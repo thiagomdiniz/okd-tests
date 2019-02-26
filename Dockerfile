@@ -1,3 +1,3 @@
-FROM php:7.1-apache
-COPY app/ /var/www/html/
+FROM dockage/alpine-nginx-php-fpm
+COPY app/ /var/www/
 EXPOSE 80/tcp
