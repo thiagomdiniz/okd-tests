@@ -13,7 +13,9 @@ RUN a2enmod rewrite
 RUN sed -i "s/short_open_tag = Off/short_open_tag = On/" /etc/php/7.2/apache2/php.ini && \
  sed -i "s/error_reporting = .*$/error_reporting = E_ERROR | E_WARNING | E_PARSE/" /etc/php/7.2/apache2/php.ini && \
  sed -i 's/80/8080/g' /etc/apache2/ports.conf && \
- chown -R www-data. /var/log/apache2 && chmod -R 777 /var/log/apache2
+ chown -R www-data. /var/log/apache2 && \
+ chmod -R 777 /var/log/apache2 && \
+ chown -R www-data. /var/run/apache2
 
 # Manually set up the apache environment variables
 ENV APACHE_RUN_USER www-data
