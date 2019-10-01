@@ -1,0 +1,13 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: pv-{{ volume_name }}
+spec:
+  capacity:
+    storage: {{ volume_size }}Gi
+  nfs:
+    server: nsf-server-01.local
+    path: /nfsopenshift/{{ namespace_name }}/{{ volume_name }}
+  accessModes:
+    - {{ pv_access_mode }}
+

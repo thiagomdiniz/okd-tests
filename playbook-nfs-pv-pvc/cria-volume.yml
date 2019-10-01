@@ -1,0 +1,72 @@
+- hosts: nfs-server-01
+  vars:
+    openshift_host: https://openshift.yourdomain.com.br:8443
+
+  vars_prompt:
+    - name: namespace_name
+      prompt: "Qual o nome do namespace?"
+      private: no
+    - name: volume_name
+      prompt: "Qual sera o nome do volume/app?"
+      private: no
+    - name: volume_size
+      prompt: "Qual sera o tamanho em GB do volume?"
+      private: no
+    - name: pv_access_mode
+      prompt: "Qual o AccessMode do PV? (ReadWriteOnce, ReadOnlyMany ou ReadWriteMany)"
+      private: no
+    - name: pvc_access_mode
+      prompt: "Qual o AccessMode do PVC? (ReadWriteOnce, ReadOnlyMany ou ReadWriteMany)"
+      private: no
+    - name: openshift_username
+      prompt: "Usuario para autenticar no Openshift"
+      private: no
+    - name: openshift_password
+      prompt: "Senha para autenticar no Openshift"
+      private: yes
+
+  tasks:
+
+    - debug:
+        msg: "/nfsopenshift/{{ namespace_name }}/{{ volume_name }} 10.10.10.0/24(sync,rw,no_root_squash)"
+
+    - name: Create NFS directory
+      file:
+        path: "/nfsopenshift/{{ namespace_name }}/{{ volume_name }}"
+        state: directory
+        mode: '0777'
+
+    - name: Add line in exportfs
+      lineinfile:
+        path: /etc/exports
+        state: present
+        line: "/nfsopenshift/{{ namespace_name }}/{{ volume_name }} 10.10.10.0/24(sync,rw,no_root_squash)"
+      register: nfs_exports
+
+    - name: Reload NFS dirs
+      raw: exportfs -a
+      when: nfs_exports.changed
+
+    - name: Autentica no Openshift
+      local_action: command ./oc login "{{ openshift_host }}" -u "{{ openshift_username }}" -p "{{ openshift_password }}"  --insecure-skip-tls-verify=true
+
+    - name: Altera o projeto no Openshift
+      local_action: command ./oc project "{{ namespace_name }}"
+
+    - name: Cria yaml para criacao do PV
+      template: src={{ playbook_dir }}/pv_template.j2 dest={{ playbook_dir }}/pv.yaml
+      delegate_to: localhost
+
+    - name: Cria yaml para criacao do PVC
+      template: src={{ playbook_dir }}/pvc_template.j2 dest={{ playbook_dir }}/pvc.yaml
+      delegate_to: localhost
+
+    - name: Cria PV no Openshift
+      local_action: command ./oc create -f {{ playbook_dir }}/pv.yaml
+
+    - name: Cria PVC no Openshift
+      local_action: command ./oc create -f {{ playbook_dir }}/pvc.yaml
+
+    - name: Faz logout no Openshift
+      local_action: command ./oc logout
+
